@@ -25,6 +25,8 @@ public class ProdutoDAO {
 	 * */
 	
 	public static void cadastrarProduto(Loja loja, Produto produto){
+		/*Tratar erro caso o produto ja esteja cadastrado
+		 * */
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;	

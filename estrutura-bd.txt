@@ -25,7 +25,7 @@ create table produtos (
 	
 	id int NOT NULL AUTO_INCREMENT,
 	nome_produto varchar(30),
-	PRIMARY KEY(id)
+	PRIMARY KEY(id, nome_produto)
 
 )default charset=utf8;
 

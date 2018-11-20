@@ -34,7 +34,6 @@ public class LojaDAO {
 			stmt.setString(6, novoEndereco.getCidade());
 			stmt.setString(7, novoEndereco.getEstado());
 			stmt.executeUpdate();
-			System.out.println("Um Sucesso");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			//fecha a conexao
@@ -42,19 +41,63 @@ public class LojaDAO {
 		}
 
 	}
-	
+	/**Sobreescreve uma determinada loja no BD
+	 * @param Loja loja
+	 * @return void
+	 * */
+
+	public static void alterarLoja(Loja loja) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		Endereco endereco = loja.getEndereco();
+		int id_loja;
+		String sql, razaoSocial, cnpj, senha, rua, bairro, cidade, estado;
+		try {
+			sql = "update lojas set razao_social = ?, cnpj = ?, senha = ?, rua = ?, bairro = ?, cidade = ?, estado = ? where id = ?";
+			stmt = con.prepareStatement(sql);
+			
+			//recuperando dados no objeto
+			id_loja = loja.getId();
+			razaoSocial = loja.getRazaoSocial();
+			cnpj = loja.getCnpj();
+			senha = loja.getSenha();
+			rua = endereco.getRua();
+			bairro = endereco.getBairro();
+			cidade = endereco.getCidade();
+			estado = endereco.getEstado();
+			
+			//setando a string mysql
+			stmt.setString(1, razaoSocial);
+			stmt.setString(2, cnpj);
+			stmt.setString(3, senha);
+			stmt.setString(4, rua);
+			stmt.setString(5, bairro);
+			stmt.setString(6, cidade);
+			stmt.setString(7, estado);
+			stmt.setInt(8, id_loja);
+			stmt.executeUpdate();
+
+		} catch (SQLException ex) {
+			System.out.println("Falha");
+		}
+	}
+
 	/**Obter loja apartir de um cnpj
 	 * @param String cnpj
 	 * @return Loja loja
 	 * */
 	public static Loja obterLoja(String cnpj) {
+		/*Tratar erro não achou loja
+		 * */
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Loja novaLoja = null;
 		Endereco novoEndereco;
+		String sql;
 		try {
-			stmt = con.prepareStatement("select * from lojas where cnpj = ?");
+			sql = "select * from lojas where cnpj = ?";
+			stmt = con.prepareStatement(sql);
 			stmt.setString(1, cnpj);
 			rs = stmt.executeQuery();
 			rs.next();
@@ -63,7 +106,6 @@ public class LojaDAO {
 			novaLoja = new Loja(rs.getString("razao_social"), rs.getString("cnpj"), rs.getString("senha"),
 					novoEndereco);
 			novaLoja.setId(rs.getInt("id"));
-			//System.out.println(novaLoja.getRazaoSocial());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			//fecha a conexao
@@ -95,29 +137,5 @@ public class LojaDAO {
 		}
 
 		return id_loja;
-	}
-	
-	/**Sobreescreve uma determinada loja no BD
-	 * @param Loja loja
-	 * @return void
-	 * */
-/*	public static void alterarLoja(Loja loja) {
-		Connection con = ConnectionFactory.getConnection();
-		PreparedStatement stmt = null;
-		Endereco endereco = loja.getEndereco();
-		stmt = con.prepareStatement(
-				"update lojas set razao_social = ?, cnpj = ?, senha = ?, rua = ?, bairro = ?, cidade = ?, estado = ? where id = ?");
-		stmt.setString(1, loja.getRazaoSocial());
-		stmt.setString(2, loja.getCnpj());
-		stmt.setString(3, loja.getSenha());
-		stmt.setString(4, endereco.getRua());
-		stmt.setString(5, endereco.getBairro());
-		stmt.setString(6, endereco.getCidade());
-		stmt.setString(7, endereco.getEstado());
-		stmt.setInt(8, loja.getId());
-		stmt.executeUpdate();
-
-	}
-*/
-	
+	}	
 }

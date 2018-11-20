@@ -70,16 +70,20 @@ public class Teste {
     
 */    
     public static void main(String[] args){
-    	/*
-    	Cadastra Loja Manual
-    	Endereco endereco = new Endereco("1", "2", "3", "4");
-    	Loja loja = new Loja("Teste", "57.346.953/0001-23", "teste", endereco);
-    	*/
     	
-    	LojaDAO lojaDao= new LojaDAO();
-    	Loja loja = LojaDAO.obterLoja("57.346.953/0001-23");
-    	Produto produto = new Produto("Melancia", 10, 30);
-    	new ProdutoDAO().cadastrarProduto(loja, produto);
+    	//Endereco endereco = new Endereco("1", "2", "3", "4");
+    	//Loja loja = new Loja("Teste", "57.346.953/0001-23", "teste", endereco);
+    	
+    	Loja loja = new LojaDAO().obterLoja("");
+    	loja.setCnpj("57.346.953/0001-23");
+    	new LojaDAO().alterarLoja(loja);
+    	
+    	//LojaDAO lojaDao= new LojaDAO();
+    	//lojaDao.createLoja(loja);
+    	//Loja loja = null;
+    	//loja = LojaDAO.obterLoja("57.346.953/0001-23");
+    	//Produto produto = new Produto("Melancia", 10, 30);
+    	//new ProdutoDAO().cadastrarProduto(loja, produto);
   /*  	
         Cadastrar cadastrar = new Cadastrar();
     	
