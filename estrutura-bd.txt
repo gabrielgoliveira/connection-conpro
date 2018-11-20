@@ -1,0 +1,41 @@
+create database conpro
+default character set utf8
+default collate utf8_general_ci;
+
+
+use conpro;
+
+
+create table lojas (
+	
+	id int NOT NULL AUTO_INCREMENT,
+	razao_social varchar(30),
+	cnpj varchar(30),
+	senha varchar(30),
+	rua varchar(30),
+	bairro varchar(30),
+	cidade varchar(30),
+	estado varchar(30),
+	PRIMARY KEY(id)
+
+)default charset=utf8;
+
+
+create table produtos (
+	
+	id int NOT NULL AUTO_INCREMENT,
+	nome_produto varchar(30),
+	PRIMARY KEY(id)
+
+)default charset=utf8;
+
+
+create table loja_produto (
+	
+	id_loja int NOT NULL,
+	id_produto int NOT NULL,
+	qtde int,
+	preco double,
+	PRIMARY KEY(id_loja)
+
+)default charset=utf8;

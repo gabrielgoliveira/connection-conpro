@@ -1,0 +1,22 @@
+DriverManager é a responsável por se comunicar com todos os drivers que você deixou disponível. 
+Driver Manager: Sempre é utilizado para fazer conexão com um banco de dados e retorna o tipo Connection;
+
+
+Connection: que define métodos para executar uma query (como um insert e select), 
+comitar transação, fechar a conexão, entre outros.
+
+
+Alguns metodos de Connection 
+ 
+close(): fecha a conexão.
+commit(): realiza um commit em todas as alterações desde o último commit/rollback. Caso a conexão esteja em modo auto-commit não é necessário chamá-lo explicitamente, pois será executado a cada alteração.
+createStatement(): um dos métodos mais importantes da conexão, ele cria um objeto Statement que será usado para enviar expressões SQL para o banco. O retorno é um objeto da interface java.sql.Statement.
+getMetaData(): busca os metadados do banco de dados. Metadados seriam basicamente a estrutura do banco, nomes de tabelas, campos, tipos, etc. Retorna um objeto da interface java.sql.DatabaseMetaData.
+isClosed(): verifica se a conexão está fechada (retorna true se estiver fechada e false se estiver aberta).
+isReadOnly(): verifica se a conexão é somente leitura (retorna true se for somente leitura e false se permitir alterações).
+prepareCall(String sql): cria um objeto para execução de stored procedures, o objeto retornado implementa java.sql.CallableStatement.
+prepareStatement(String sql): Cria um objeto semelhante ao criado por createStatement(), porém permite trabalhar com queries parametrizadas.
+rollback(): desfaz as alterações feitas desde o último commit/rollback, é o inverso de commit. Caso a conexão esteja em modo auto-commit não é possível usá-lo, pois a conexão não deixa transações não confirmadas que possam ser desfeitas.
+setAutoCommit(boolean autoCommit): altera o modo auto-commit da conexão (true para ativar e false para desativar). Caso o auto-commit seja desativado, é necessária a chamada explícita ao método commit(), caso contrário as alterações não terão efeito.
+
+
