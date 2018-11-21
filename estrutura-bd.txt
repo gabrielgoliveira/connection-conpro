@@ -36,6 +36,34 @@ create table loja_produto (
 	id_produto int NOT NULL,
 	qtde int,
 	preco double,
-	PRIMARY KEY(id_loja)
 
 )default charset=utf8;
+
+
+/*Comandos de cadastro para facilitar a vida (com cnpj valido)*/
+
+
+insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values ('Loja 1', '89.223.734/0001-43', '123', 'Rua 1', 'Setor Bueno', 'Goiania', 'Goias');
+
+insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values ('Loja 2', '40.961.318/0001-53', '123', 'Rua 2', 'Garavelo', 'Goiania', 'Goias');
+
+insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values ('Loja 3', '77.347.860/0001-20', '123', 'Rua 3', 'Setor Bueno', 'Goiania', 'Goias');
+
+insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values ('Loja 4', '53.874.580/0001-02', '123', 'Rua 4', 'Setor Oeste', 'Goiania', 'Goias');
+
+insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values ('Loja 5', '43.677.161/0001-27', '123', 'Rua 5', 'Setor Oeste', 'Goiania', 'Goias');
+
+
+insert into produtos (nome_produto) values ('moto G6');
+
+insert into produtos (nome_produto) values ('Notebook');
+
+
+
+insert into loja_produto (id_loja, id_produto, qtde, preco) values (1, 1,  10, 1200);
+
+insert into loja_produto (id_loja, id_produto, qtde, preco) values (2, 1,  20, 1250);
+
+insert into loja_produto (id_loja, id_produto, qtde, preco) values (3, 1,  30, 1300);
+
+insert into loja_produto (id_loja, id_produto, qtde, preco) values (4, 3,  5, 4500);

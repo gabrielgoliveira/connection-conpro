@@ -10,7 +10,7 @@ import model.Endereco;
 import model.Loja;
 import model.Produto;
 
-/**Realiza a conversação relacionadas a Lojas entre a interface grafica e o banco de dados
+/**Realiza as operacoes relacionadas a loja no banco de dados
  * @author Gabriel Oliveira
  * */
 
@@ -24,8 +24,10 @@ public class LojaDAO {
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
 		Endereco novoEndereco = novaLoja.getEndereco();
+		String sql;
 		try {
-			stmt = con.prepareStatement("insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values (?, ?, ?, ?, ?, ?, ?)");
+			sql = "insert into lojas (razao_social, cnpj, senha, rua, bairro, cidade, estado) values (?, ?, ?, ?, ?, ?, ?)";
+			stmt = con.prepareStatement(sql);
 			stmt.setString(1, novaLoja.getRazaoSocial());
 			stmt.setString(2, novaLoja.getCnpj());
 			stmt.setString(3, novaLoja.getSenha());
@@ -36,8 +38,9 @@ public class LojaDAO {
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
 			//fecha a conexao
-			new ConnectionFactory().closeConnection(con);
+			ConnectionFactory.closeConnection(con, stmt);
 		}
 
 	}
@@ -79,10 +82,12 @@ public class LojaDAO {
 
 		} catch (SQLException ex) {
 			System.out.println("Falha");
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
 		}
 	}
 
-	/**Obter loja apartir de um cnpj
+	/**Obter loja apartir de um cnpj, em caso de erro retorna null
 	 * @param String cnpj
 	 * @return Loja loja
 	 * */
@@ -108,34 +113,12 @@ public class LojaDAO {
 			novaLoja.setId(rs.getInt("id"));
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}  finally {
 			//fecha a conexao
-			new ConnectionFactory().closeConnection(con);
+			ConnectionFactory.closeConnection(con, stmt);
+			return novaLoja;
 		}
-		return novaLoja;
+		
 	}
-	
-	/**Obter o ID da loja apartir de um produto
-	 * @param Produto p
-	 * @return int id
-	 * */
-	public static int obterIdLoja(Produto p) {
-		Connection con = ConnectionFactory.getConnection();
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		int id_loja = 0;
-
-		try {
-			stmt = con.prepareStatement("SELECT id_loja FROM lojas_produtos WHERE id_produto = ?");
-			stmt.setInt(1, p.getCodigo());
-			rs = stmt.executeQuery();
-			rs.next();
-			id_loja = rs.getInt("id_loja");
-		} catch (SQLException e) {
-			e.getMessage();
-			//fecha a conexao
-			new ConnectionFactory().closeConnection(con);
-		}
-
-		return id_loja;
-	}	
+		
 }

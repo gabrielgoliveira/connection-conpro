@@ -1,5 +1,6 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import connection.*;
@@ -70,41 +71,15 @@ public class Teste {
     
 */    
     public static void main(String[] args){
-    	
-    	//Endereco endereco = new Endereco("1", "2", "3", "4");
-    	//Loja loja = new Loja("Teste", "57.346.953/0001-23", "teste", endereco);
-    	
-    	Loja loja = new LojaDAO().obterLoja("");
-    	loja.setCnpj("57.346.953/0001-23");
-    	new LojaDAO().alterarLoja(loja);
-    	
-    	//LojaDAO lojaDao= new LojaDAO();
-    	//lojaDao.createLoja(loja);
-    	//Loja loja = null;
-    	//loja = LojaDAO.obterLoja("57.346.953/0001-23");
-    	//Produto produto = new Produto("Melancia", 10, 30);
-    	//new ProdutoDAO().cadastrarProduto(loja, produto);
-  /*  	
-        Cadastrar cadastrar = new Cadastrar();
-    	
-        login();
-   */    
-        
-        /*
-        int flag = 1;
-    	Scanner ler = new Scanner(System.in);
-    	while(flag != 0){
-    		System.out.print("MENU\n");
-    		System.out.print("1 - Cadastrar\n2 - Login\n0 - Sair");
-    		flag = ler.nextInt();
-    		if(flag == 1){
-    			cadastraLoja();
-    		} else if(flag == 2) {
-    			login();
-    			
-    		}
+ 
+    	ArrayList<Loja> listaLojas;
+    	Loja loja;
+    	listaLojas = ProdutoDAO.produtosCidade("Goiania", "Garavelo", "moto G6");
+    	for(int i = 0; i<listaLojas.size(); i++) {
+    		loja = listaLojas.get(i);
+    		System.out.println(loja.getRazaoSocial());
     	}
-    	*/
+ 
     }
     	
 }

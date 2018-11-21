@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import connection.ConnectionFactory;
 
-
-
-/**Classe responsavel por realizar a verificação do login no BD.
+/**Classe responsavel por realizar a verificao do login no BD.
  * @author Gabriel Oliveira
  * */
 
-
 public class LoginDAO {
+	/** Realiza a verificacao de login e senha no banco de dados
+	 * @param cnpj
+	 * @param senha
+	 * @return boolean
+	 */
 	public static boolean checkLogin(String cnpj, String senha) {
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
@@ -29,7 +31,11 @@ public class LoginDAO {
 			}
 		} catch (SQLException ex) {
 			System.out.print("ERRO");
+		} finally {
+			//fechando a conexao
+			ConnectionFactory.closeConnection(con, stmt);
+			return check;
 		}
-		return check;
+		
 	}
 }

@@ -12,7 +12,7 @@ import model.Endereco;
 import model.Loja;
 import model.Produto;
 
-/**Realiza a conversação relacionadas a Produtos entre a interface grafica e o banco de dados
+/**Realiza as operacoes relacionadas a produtos no banco de dados
  * @author Gabriel Oliveira
  * */
 
@@ -72,19 +72,20 @@ public class ProdutoDAO {
 		
 		} catch (SQLException e) {
 			e.printStackTrace();
-			new ConnectionFactory().closeConnection(con);
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
 		}
 		
 	}
 		
 	/**Busca a lista de produtos cadastros em todas as lojas, sem nenhum filtro
-	 * @param String
-	 * @return ArrayList
+	 * @param String - nome
+	 * @return ArrayList - Produtos
 	 * */
 	
 	public static ArrayList<Produto> obterProdutos(String nome) {
 		Connection con = ConnectionFactory.getConnection();
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		ResultSet rs;
 		Produto p;
 		ArrayList<Produto> produtos = new ArrayList<>();
@@ -103,9 +104,142 @@ public class ProdutoDAO {
 			}
 		} catch (SQLException e) {
 			e.getMessage();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			return produtos;
 		}
 
-		return produtos;
+		
 	}
+	
+	
+	/**Dado o nome de um produto cadastrado no BD retorna o codigo do mesmo, e caso nao exista
+	 * retorna -1.
+	 * @param String - nomeProduto
+	 * @return int - codigoProduto
+	 * */
+	public static int codigoProduto(String nomeProduto) {
+		
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs;
+		String sql = "select * from produtos where nome_produto = ?";
+		int codigoProduto = -1;
+		
+		try {
+			stmt  = con.prepareStatement(sql);
+			stmt.setString(1, nomeProduto);
+			rs = stmt.executeQuery();
+			rs.next();
+			codigoProduto = rs.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			if(codigoProduto >= 0) {
+				return codigoProduto;
+			} else {
+				return -1;
+			}
+		}
+	}
+	
+	/**Verifica se determinada loja possui determinado produto cadastrado
+	 * @param int - idLoja
+	 * @param int - idProduto
+	 * @return boolean
+	 * */
+	public static boolean verificaProduto(int id_loja, int id_produto) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs;
+		String sql;
+		boolean flag = false;
+		try {
+			sql = "select * from loja_produto where id_loja = ? and id_produto = ?";
+			stmt = con.prepareStatement(sql);
+			stmt.setInt(1, id_loja);
+			stmt.setInt(2, id_produto);
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				flag = true;
+			} else {
+				flag = false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			return flag;
+			
+		}
+	}
+	/**Verifica qual loja possui um determinado produto dados Cidade, Bairro e o Produto.
+	 * @param String - cidade
+	 * @param String - bairro
+	 * @param String - nomeProduto
+	 * @return ArrayList - listaLojas
+	 * */
+	
+	public static ArrayList<Loja> produtosCidade(String cidade, String bairro, String nomeProduto){
+	//variaveis
+		String sql;
+		String razaoSocial, cnpj, senha;
+		String atualRua, atualBairro, atualCidade, atualEstado;
+		Endereco endereco;
+		Loja loja;
+		int id_produto = codigoProduto(nomeProduto);
+		int id_loja;
+		
+		
+	//variaveis do pacote JDBC
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs;
+		
+		ArrayList<Loja> listaLojas = new ArrayList<Loja>();
+		
+		
+		try {
+			sql = "select * from lojas where cidade = ? and bairro = ?";
+			stmt = con.prepareStatement(sql);
+			stmt.setString(1, cidade);
+			stmt.setString(2, bairro);
+			rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				//recupera o id da loja no ResultStatement
+				id_loja = rs.getInt("id");
+			
+				//verifica se o produto pertence a loja
+				if(verificaProduto(id_loja, id_produto)) {
+			
+					//recuperando endereco
+					atualRua = rs.getString("rua");
+					atualBairro = rs.getString("bairro");
+					atualCidade = rs.getString("cidade");
+					atualEstado = rs.getString("estado");
+					endereco = new Endereco(atualRua, atualBairro, atualCidade, atualEstado);
+					
+					//recuperando e montando um objeto loja
+					razaoSocial = rs.getString("razao_social");
+					cnpj = rs.getString("cnpj");
+					senha = rs.getString("senha");
+					loja = new Loja(razaoSocial, cnpj, senha, endereco);
+					
+					//salvando no arrayList
+					listaLojas.add(loja);
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			return listaLojas;
+		}
+	}
+	
 	
 }

@@ -1,0 +1,25 @@
+LojaDAO
+
+- void: Criar Loja(Loja novaLoja)
+- void: Alterar Loja(Loja loja)
+- Loja: ObterLoja (String cnpj)
+
+LoginDAO
+
+- boolean: checkLogin();
+
+ProdutoDAO
+
+- void: CadastrarProduto(Loja loja, Produto produto)
+- ArrayList<Produtos>: ObterProdutos(String nomeProduto)
+- int: codigoProduto(String nomeProduto)
+- boolean: verificaProduto(int id_loja, int id_produto)
+- ArrayList<Loja>:produtosCidade(String cidade, String bairro, String nomeProduto);
+
+
+
+Falta
+
+- void: AlterarProduto(Produto produto);
+- void: apagarLoja();
+- void: apagarProduto();
