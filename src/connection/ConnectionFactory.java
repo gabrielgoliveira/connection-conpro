@@ -9,7 +9,7 @@ public class ConnectionFactory {
 	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
 	private static String URL = "jdbc:mysql://localhost:3306/conpro?useTimezone=true&serverTimezone=UTC";
 	private static String USER = "root";
-	private static String PASS = "dba4599C";
+	private static String PASS = "";
 	
 	/**Metodo responsavel por estabelecer uma conexão com o BD.
 	 * @param void

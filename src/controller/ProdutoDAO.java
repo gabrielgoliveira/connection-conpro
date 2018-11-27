@@ -21,63 +21,148 @@ public class ProdutoDAO {
 	/**Cadastro o produto no banco de dados, e relaciona o produto com a loja
 	 * @param Loja
 	 * @param Produto
-	 * @return void
+	 * @return boolean
 	 * */
-	
-	public static void cadastrarProduto(Loja loja, Produto produto){
-		/*Tratar erro caso o produto ja esteja cadastrado
-		 * */
+	public static boolean cadastrarProduto(Loja loja, Produto produto){
 		Connection con = ConnectionFactory.getConnection();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;	
 		String sql;
 		int id_loja, id_produto, qtde;
 		double preco;
-		try {
-			//inserir na tabela produtos
-			sql = "insert into produtos (nome_produto) values (?)";
-			stmt = con.prepareStatement(sql);
-			stmt.setString(1, produto.getNome());
-			stmt.executeUpdate();
-			stmt = null;
-			
-			//recuperando o id do produto
-			sql = "select id from produtos where nome_produto = ?";
-			stmt = con.prepareStatement(sql);
-			stmt.setString(1, produto.getNome());
-			//executeQuery retorna um ResultSet (diferentemente de executeUpdate)
-			rs = stmt.executeQuery();
-			rs.next();
-			id_produto = rs.getInt("id");
-			produto.setCodigo(id_produto);
-			stmt = null;
+		boolean check = false;
+		id_loja = loja.getId();
 		
-			//inserindo na tabela relacional
-			sql = "insert into loja_produto (id_loja, id_produto, qtde, preco) values (?, ?, ?, ?)";
-			stmt = con.prepareStatement(sql);
+		try {
+			//checando se o produto está ou não cadastrado
+			id_produto = codigoProduto(produto.getNome());
 			
-			//recuperando os dados
-			id_loja = loja.getId();
-			qtde = produto.getQuantidade();
-			preco = produto.getPreco();
+			//caso o produto não esteja cadastrado tentar
+			if(id_produto == -1){
+				//inserir na tabela produtos
+				sql = "insert into produtos (nome_produto) values (?)";
+				stmt = con.prepareStatement(sql);
+				stmt.setString(1, produto.getNome());
+				stmt.executeUpdate();
+				stmt = null;
+				
+				
+				//recupera o codigo gerado pelo mysql
+				id_produto = codigoProduto(produto.getNome());
+			}
 			
-			//setando o comando sql
-			stmt.setInt(1, id_loja);
-			stmt.setInt(2, id_produto);
-			stmt.setInt(3, qtde);
-			stmt.setDouble(4, preco);
+			//passando o codigo para o objeto
+			produto.setCodigo(id_produto);
 			
-			//executando comando sql
-			stmt.executeUpdate();
+			if(!verificaProduto(id_loja, id_produto)){
+				//inserindo na tabela relacional
+				sql = "insert into loja_produto (id_loja, id_produto, qtde, preco) values (?, ?, ?, ?)";
+				stmt = con.prepareStatement(sql);
+				
+				//recuperando os dados
+				id_loja = loja.getId();
+				qtde = produto.getQuantidade();
+				preco = produto.getPreco();
+				
+				//setando o comando sql
+				stmt.setInt(1, id_loja);
+				stmt.setInt(2, id_produto);
+				stmt.setInt(3, qtde);
+				stmt.setDouble(4, preco);
+				
+				//executando comando sql
+				stmt.executeUpdate();	
+				check = true;
+			}
 		
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			ConnectionFactory.closeConnection(con, stmt);
+			//caso o produto ja esteja cadastrado stmt vai ser null
+			if(stmt == null){
+				ConnectionFactory.closeConnection(con);
+			} else {
+				ConnectionFactory.closeConnection(con, stmt);
+			}
+			
+			return check;
 		}
 		
 	}
+	/** Altera quantidade e preco de um produto na tabela
+	 * @param Loja - loja
+	 * @param Produto - produto
+	 * @return int - check
+	 * */
+	public static int alterarProduto(Loja loja, Produto produto){
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		String sql;
+		int id_loja, id_produto, qtde, check = 0;
+		double preco;
 		
+		try {
+
+			sql = "update loja_produto set qtde = ?, preco = ? where id_loja = ? and id_produto = ?";
+			
+			id_loja = loja.getId();
+			id_produto = produto.getCodigo();
+			qtde = produto.getQuantidade();
+			preco = produto.getPreco();
+			
+			stmt = con.prepareStatement(sql);
+			
+			stmt.setInt(1, qtde);
+			stmt.setDouble(2, preco);
+			stmt.setInt(3, id_loja);
+			stmt.setInt(4, id_produto);
+		
+			//1 para sucesso e 0 para erro
+			check = stmt.executeUpdate();
+				
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			return check;
+		}
+	}
+	/** Apaga determinado produto da tabela loja_produto, e caso tenha sucesso retorna 1 caso contrario 0
+	 * @param Loja - loja
+	 * @param Produto - produto
+	 * @return int - check
+	 * */
+	
+	public static int deletarProduto(Loja loja, Produto produto){
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		String sql;
+		
+		int flag, check = 0;
+		int id_loja = loja.getId();
+		int id_produto = produto.getCodigo();
+		
+		try {
+			sql = "delete from loja_produto where id_loja = ? and id_produto = ?";
+			stmt = con.prepareStatement(sql);
+			stmt.setInt(1, id_loja);
+			stmt.setInt(2, id_produto);
+			flag = stmt.executeUpdate();
+			if(flag == 1){
+				//sucesso em apagar a linha
+				check = 1;
+			} else {
+				//linha nao encontrada
+				check = 0;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionFactory.closeConnection(con, stmt);
+			return check;
+		}
+	}
 	/**Busca a lista de produtos cadastros em todas as lojas, sem nenhum filtro
 	 * @param String - nome
 	 * @return ArrayList - Produtos
@@ -130,8 +215,9 @@ public class ProdutoDAO {
 			stmt  = con.prepareStatement(sql);
 			stmt.setString(1, nomeProduto);
 			rs = stmt.executeQuery();
-			rs.next();
-			codigoProduto = rs.getInt("id");
+			if(rs.next()){
+				codigoProduto = rs.getInt("id");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -240,6 +326,5 @@ public class ProdutoDAO {
 			return listaLojas;
 		}
 	}
-	
-	
+
 }

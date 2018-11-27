@@ -11,9 +11,6 @@ public class Loja {
 	// private ArrayList<Produto> listaProdutos = new ArrayList();
 
 	// construtor
-	public Loja() {
-	};
-
 	public Loja(String razaoSocial, String cnpj, String senha, Endereco endereco) {
 		this.razaoSocial = razaoSocial;
 		this.cnpj = cnpj;

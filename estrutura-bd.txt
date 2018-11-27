@@ -35,7 +35,7 @@ create table loja_produto (
 	id_loja int NOT NULL,
 	id_produto int NOT NULL,
 	qtde int,
-	preco double,
+	preco double
 
 )default charset=utf8;
 
